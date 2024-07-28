@@ -61,6 +61,9 @@ public class EntityMovement : MonoBehaviour
         } else if (direction.x < 0f) {
             transform.localEulerAngles = Vector3.zero;
         }
+
+        Debug.DrawRay(rigidbody.position, new Vector3(velocity.x, 0.0f), Color.red); // Draws X Velocity
+        Debug.DrawRay(rigidbody.position, new Vector3(0.0f, velocity.y), Color.green); // Draws Y Velocity
     }
 
 }

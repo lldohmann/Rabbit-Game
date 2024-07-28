@@ -70,6 +70,8 @@ public class PlayerMovement : MonoBehaviour
         position.x = Mathf.Clamp(position.x, leftEdge.x + 0.5f, rightEdge.x - 0.5f);
 
         rigidbody.MovePosition(position);
+        Debug.DrawRay(rigidbody.position, new Vector3(velocity.x, 0.0f), Color.red); // Draws X Velocity
+        Debug.DrawRay(rigidbody.position, new Vector3(0.0f, velocity.y), Color.green); // Draws Y Velocity
     }
 
     private void HorizontalMovement()
@@ -109,6 +111,10 @@ public class PlayerMovement : MonoBehaviour
     {
         // check if falling
         bool falling = velocity.y < 0f || !Input.GetButton("Jump");
+        if (falling)
+        {
+            jumping = false;
+        }
         float multiplier = falling ? 2f : 1f;
 
         // apply gravity and terminal velocity

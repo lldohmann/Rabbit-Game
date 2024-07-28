@@ -1,24 +1,34 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
+using UnityEngine.UI;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
+    public Canvas canvas;
 
     public int world { get; private set; }
     public int stage { get; private set; }
     public int lives { get; private set; }
     public int coins { get; private set; }
+    public int score { get; private set; }
+    public int highscore { get; private set; }
+    public float timer { get; private set; }
 
     private void Awake()
     {
-        if (Instance != null) {
-            DestroyImmediate(gameObject);
-        } else {
+        if (Instance == null)
+        {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
-    }
+        else if (Instance != this)
+        {
+            DestroyObject(gameObject);
+        }
+        DontDestroyOnLoad(gameObject);  
+}
 
     private void OnDestroy()
     {
@@ -30,23 +40,45 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         Application.targetFrameRate = 60;
+        if (SceneManager.GetActiveScene().name == "Title")
+        {
 
-        NewGame();
+        }
+        else
+        {
+            NewGame();
+        }
+    }
+
+    public void Update()
+    {
+        if (GameObject.Find("Timer"))
+        {
+            GameObject.Find("Timer").GetComponent<Text>().text = timer.ToString();
+            timer -= Time.deltaTime;
+            if (timer == 0)
+            {
+                ResetLevel();
+            }
+        }
     }
 
     public void NewGame()
     {
         lives = 3;
         coins = 0;
+        timer = 255;
 
         LoadLevel(1, 1);
     }
 
     public void GameOver()
     {
-        // TODO: show game over screen
+        SceneManager.LoadScene("Game Over");
 
-        NewGame();
+        StartCoroutine(Waiting(10));
+
+        //SceneManager.LoadScene("Title");
     }
 
     public void LoadLevel(int world, int stage)
@@ -55,6 +87,22 @@ public class GameManager : MonoBehaviour
         this.stage = stage;
 
         SceneManager.LoadScene($"{world}-{stage}");
+
+        //GameObject.Find("Scene").GetComponent<Text>().text = this.world.ToString() + "-" + this.stage.ToString();
+    }
+
+    public void LoadPreview(int world, int stage)
+    {
+        SceneManager.LoadScene("Level Preview");
+
+        StartCoroutine(Waiting(5));
+
+        LoadLevel(world, stage);
+    }
+
+    IEnumerator Waiting(int seconds)
+    {
+        yield return new WaitForSeconds(seconds);
     }
 
     public void NextLevel()
@@ -73,7 +121,7 @@ public class GameManager : MonoBehaviour
         lives--;
 
         if (lives > 0) {
-            LoadLevel(world, stage);
+            LoadPreview(world, stage);
         } else {
             GameOver();
         }
@@ -82,7 +130,8 @@ public class GameManager : MonoBehaviour
     public void AddCoin()
     {
         coins++;
-
+        Debug.Log(coins.ToString());
+        GameObject.Find("Coin").GetComponent<Text>().text = coins.ToString();
         if (coins == 100)
         {
             coins = 0;
@@ -93,6 +142,20 @@ public class GameManager : MonoBehaviour
     public void AddLife()
     {
         lives++;
+        Debug.Log("Life: " + lives.ToString());
+    }
+
+    public void AddScore(int points)
+    {
+        score += points;
+        GameObject.Find("Score").GetComponent<Text>().text = score.ToString();
+        if (score > highscore)
+        {
+            highscore = score;
+            PlayerPrefs.SetInt("highscore", score);
+            Debug.Log("Highscore: " + highscore.ToString());
+        }
+        Debug.Log("Score: " + score.ToString());
     }
 
 }

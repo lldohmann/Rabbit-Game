@@ -7,6 +7,7 @@ public class PlayerSpriteRenderer : MonoBehaviour
     public SpriteRenderer spriteRenderer { get; private set; }
     public Sprite idle;
     public Sprite jump;
+    public Sprite falling;
     public Sprite slide;
     public AnimatedSprite run;
 
@@ -26,6 +27,9 @@ public class PlayerSpriteRenderer : MonoBehaviour
             spriteRenderer.sprite = slide;
         } else if (!movement.running) {
             spriteRenderer.sprite = idle;
+        } else if (movement.falling)
+        {
+            spriteRenderer.sprite = falling;
         }
     }
 
