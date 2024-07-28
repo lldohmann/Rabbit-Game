@@ -44,21 +44,34 @@ public class GameManager : MonoBehaviour
         {
 
         }
-        else
+        if (SceneManager.GetActiveScene().name == "Game Over")
         {
-            NewGame();
+            SceneManager.LoadScene("Title");
         }
     }
 
     public void Update()
     {
-        if (GameObject.Find("Timer"))
+        if (SceneManager.GetActiveScene().name == "Title")
         {
-            GameObject.Find("Timer").GetComponent<Text>().text = timer.ToString();
-            timer -= Time.deltaTime;
-            if (timer == 0)
+
+        }
+        else if (SceneManager.GetActiveScene().name == "Game Over")
+        {
+            
+        }
+        else if (SceneManager.GetActiveScene().name == "Level Preview")
+        { }
+        else
+        {
+            if (GameObject.Find("Timer"))
             {
-                ResetLevel();
+                GameObject.Find("Timer").GetComponent<Text>().text = timer.ToString();
+                timer -= Time.deltaTime;
+                if (timer == 0)
+                {
+                    ResetLevel();
+                }
             }
         }
     }
@@ -68,17 +81,10 @@ public class GameManager : MonoBehaviour
         lives = 3;
         coins = 0;
         timer = 255;
+        world = 1;
+        stage = 1;
 
-        LoadLevel(1, 1);
-    }
-
-    public void GameOver()
-    {
-        SceneManager.LoadScene("Game Over");
-
-        StartCoroutine(Waiting(10));
-
-        //SceneManager.LoadScene("Title");
+        LoadPreview(5);
     }
 
     public void LoadLevel(int world, int stage)
@@ -91,11 +97,25 @@ public class GameManager : MonoBehaviour
         //GameObject.Find("Scene").GetComponent<Text>().text = this.world.ToString() + "-" + this.stage.ToString();
     }
 
-    public void LoadPreview(int world, int stage)
+    public void LoadLevel()
+    {
+
+        SceneManager.LoadScene($"{world}-{stage}");
+
+        //GameObject.Find("Scene").GetComponent<Text>().text = this.world.ToString() + "-" + this.stage.ToString();
+    }
+
+    public void LoadPreview(int delay)
+    {
+        SceneManager.LoadScene("Level Preview");
+        CancelInvoke(nameof(LoadPreview));
+        Invoke(nameof(LoadLevel), delay);
+    }
+    public void LoadPreview()
     {
         SceneManager.LoadScene("Level Preview");
 
-        StartCoroutine(Waiting(5));
+        //StartCoroutine(Waiting(5));
 
         LoadLevel(world, stage);
     }
@@ -116,16 +136,26 @@ public class GameManager : MonoBehaviour
         Invoke(nameof(ResetLevel), delay);
     }
 
+    public void GameOver(int delay)
+    {
+        SceneManager.LoadScene("Game Over");
+        CancelInvoke(nameof(GameOver));
+        Invoke(nameof(Start), delay);
+    }
+
     public void ResetLevel()
     {
         lives--;
 
         if (lives > 0) {
-            LoadPreview(world, stage);
+            LoadPreview(5);
         } else {
-            GameOver();
+            //SceneManager.LoadScene("Game Over");
+            GameOver(10);
         }
     }
+
+    // ITEMS & SCORE
 
     public void AddCoin()
     {
@@ -157,5 +187,4 @@ public class GameManager : MonoBehaviour
         }
         Debug.Log("Score: " + score.ToString());
     }
-
 }
