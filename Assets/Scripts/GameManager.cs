@@ -42,7 +42,8 @@ public class GameManager : MonoBehaviour
         Application.targetFrameRate = 60;
         if (SceneManager.GetActiveScene().name == "Title")
         {
-
+            timer = 0;
+            GameObject.Find("Timer").GetComponent<Text>().text = timer.ToString();
         }
         if (SceneManager.GetActiveScene().name == "Game Over")
         {
@@ -61,9 +62,15 @@ public class GameManager : MonoBehaviour
             
         }
         else if (SceneManager.GetActiveScene().name == "Level Preview")
-        { }
+        {
+            GameObject.Find("Coin").GetComponent<Text>().text = string.Format("{0:00}", coins);//coins.ToString();
+            GameObject.Find("Score").GetComponent<Text>().text = string.Format("{0:00000000}", score); //score.ToString();
+            GameObject.Find("Lifes").GetComponent<Text>().text = lives.ToString();
+        }
         else
         {
+            GameObject.Find("Coin").GetComponent<Text>().text = string.Format("{0:00}", coins);//coins.ToString();
+            GameObject.Find("Score").GetComponent<Text>().text = string.Format("{0:00000000}", score); //score.ToString();
             if (GameObject.Find("Timer"))
             {
                 GameObject.Find("Timer").GetComponent<Text>().text = timer.ToString();
@@ -146,6 +153,7 @@ public class GameManager : MonoBehaviour
     public void ResetLevel()
     {
         lives--;
+        timer = 256;
 
         if (lives > 0) {
             LoadPreview(5);
