@@ -1,8 +1,10 @@
 using System.Collections;
 using UnityEngine;
+using System.Collections;
 
 public class Player : MonoBehaviour
 {
+    //public static Player Instance { get; private set; }
     public PlayerSpriteRenderer smallRenderer;
     public PlayerSpriteRenderer bigRenderer;
     private PlayerSpriteRenderer activeRenderer;
@@ -16,9 +18,29 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
-        capsuleCollider = GetComponent<CapsuleCollider2D>();
-        deathAnimation = GetComponent<DeathAnimation>();
-        activeRenderer = smallRenderer;
+        /// <summary>
+        /// Method <c>Awake</c> creates singleton model. 
+        /// </summary>
+            //if (Instance == null)
+            //{
+            //    Instance = this;
+                capsuleCollider = GetComponent<CapsuleCollider2D>();
+                deathAnimation = GetComponent<DeathAnimation>();
+                activeRenderer = smallRenderer;
+            //}
+            //else if (Instance != this)
+            //{
+            //    DestroyObject(gameObject);
+            //}
+            //DontDestroyOnLoad(gameObject);
+    }
+
+    private void OnDestroy()
+    {
+        //if (Instance == this)
+        //{
+        //    Instance = null;
+        //}
     }
 
     public void Hit()

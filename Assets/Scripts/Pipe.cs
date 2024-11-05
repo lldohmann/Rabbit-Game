@@ -4,6 +4,7 @@ using UnityEngine;
 public class Pipe : MonoBehaviour
 {
     public Transform connection;
+    public AudioSource pipeSound;
     public KeyCode enterKeyCode = KeyCode.S;
     public Vector3 enterDirection = Vector3.down;
     public Vector3 exitDirection = Vector3.zero;
@@ -20,6 +21,7 @@ public class Pipe : MonoBehaviour
 
     private IEnumerator Enter(Transform player)
     {
+        pipeSound.Play();
         player.GetComponent<PlayerMovement>().enabled = false;
 
         Vector3 enteredPosition = transform.position + enterDirection;

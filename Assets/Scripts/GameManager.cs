@@ -1,11 +1,20 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
-using UnityEngine.UI;
+
 using System.Collections;
 
+/// <summary>
+///  Class <c>GameManager</c> is a singleton that holds 
+///  game data (Lives, Coins, Timer, Score, High Score) &
+///  Basic scene management functions (NewGame, ResetGame, LoadPreview, LoadLevel)
+///  Other gameobjects call this class to affect game flow or add to data. 
+/// </summary>
 public class GameManager : MonoBehaviour
 {
+    public AudioSource coinSound;
+    public AudioSource extraLifeSound;
+    public AudioSource clockSound;
     public static GameManager Instance { get; private set; }
     public Canvas canvas;
 
@@ -17,6 +26,9 @@ public class GameManager : MonoBehaviour
     public int highscore { get; private set; }
     public float timer { get; private set; }
 
+    /// <summary>
+    /// Method <c>Awake</c> creates singleton model. 
+    /// </summary>
     private void Awake()
     {
         if (Instance == null)
@@ -28,7 +40,7 @@ public class GameManager : MonoBehaviour
             DestroyObject(gameObject);
         }
         DontDestroyOnLoad(gameObject);  
-}
+    }
 
     private void OnDestroy()
     {
@@ -43,14 +55,16 @@ public class GameManager : MonoBehaviour
         if (SceneManager.GetActiveScene().name == "Title")
         {
             timer = 0;
-            GameObject.Find("Timer").GetComponent<Text>().text = timer.ToString();
+            //GameObject.Find("Timer").GetComponent<Text>().text = timer.ToString();
         }
         if (SceneManager.GetActiveScene().name == "Game Over")
         {
             SceneManager.LoadScene("Title");
         }
     }
-
+    /// <summary>
+    /// Method <c>Update</c> just updates stage timer.
+    /// </summary>
     public void Update()
     {
         if (SceneManager.GetActiveScene().name == "Title")
@@ -63,26 +77,35 @@ public class GameManager : MonoBehaviour
         }
         else if (SceneManager.GetActiveScene().name == "Level Preview")
         {
-            GameObject.Find("Coin").GetComponent<Text>().text = string.Format("{0:00}", coins);//coins.ToString();
-            GameObject.Find("Score").GetComponent<Text>().text = string.Format("{0:00000000}", score); //score.ToString();
-            GameObject.Find("Lifes").GetComponent<Text>().text = lives.ToString();
+            //GameObject.Find("Coin").GetComponent<Text>().text = string.Format("{0:00}", coins);//coins.ToString();
+            //GameObject.Find("Score").GetComponent<Text>().text = string.Format("{0:00000000}", score); //score.ToString();
+            //GameObject.Find("Lifes").GetComponent<Text>().text = lives.ToString();
         }
         else
         {
-            GameObject.Find("Coin").GetComponent<Text>().text = string.Format("{0:00}", coins);//coins.ToString();
-            GameObject.Find("Score").GetComponent<Text>().text = string.Format("{0:00000000}", score); //score.ToString();
-            if (GameObject.Find("Timer"))
-            {
-                GameObject.Find("Timer").GetComponent<Text>().text = timer.ToString();
+            //GameObject.Find("Coin").GetComponent<Text>().text = string.Format("{0:00}", coins);//coins.ToString();
+            //GameObject.Find("Score").GetComponent<Text>().text = string.Format("{0:00000000}", score); //score.ToString();
+            //if (GameObject.Find("Timer"))
+            //{
+                //GameObject.Find("Timer").GetComponent<Text>().text = timer.ToString();
                 timer -= Time.deltaTime;
-                if (timer == 0)
+                if (timer <= 0)
                 {
+                if (world == 1 && stage == 7)
+                {
+                    stage = 4;
+                    LoadPreview();
+                }
                     ResetLevel();
                 }
-            }
+            //}
         }
     }
 
+    /// <summary>
+    /// Method <c>NewGame</c> Loads first level data and resets all data but highscore.
+    /// Then calls the LevelPreview scene of the first level.
+    /// </summary>
     public void NewGame()
     {
         lives = 3;
@@ -90,10 +113,17 @@ public class GameManager : MonoBehaviour
         timer = 255;
         world = 1;
         stage = 1;
+        score = 0;
 
         LoadPreview(5);
     }
 
+    /// <summary>
+    /// Method <c>LoadLevel</c> sets the world and stage variables
+    /// and loads the level scene immediately. No Preview. :(
+    /// </summary>
+    /// <param name="world"></param>
+    /// <param name="stage"></param>
     public void LoadLevel(int world, int stage)
     {
         this.world = world;
@@ -132,9 +162,32 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(seconds);
     }
 
+    public void ChangeLevel(int newWorld)
+    {
+        world = newWorld;
+        //stage = newStage;
+        LoadLevel(world, stage);
+    }
+
     public void NextLevel()
     {
-        LoadLevel(world, stage + 1);
+        stage++;
+        timer = 255;
+        // TO DO IF STATEMENTS FOR SPECIFIC STAGES WITH LESS TIME THAN NORMAL
+        if (stage > 5)
+        {
+            GameOver(10);
+        }
+        LoadPreview(5);
+    }
+
+    public void KickHisSorryAss()
+    {
+        world = 1;
+        stage = 7;
+        timer = 33;
+        
+        LoadPreview(5);
     }
 
     public void ResetLevel(float delay)
@@ -169,7 +222,8 @@ public class GameManager : MonoBehaviour
     {
         coins++;
         Debug.Log(coins.ToString());
-        GameObject.Find("Coin").GetComponent<Text>().text = coins.ToString();
+        coinSound.Play();
+        //GameObject.Find("Coin").GetComponent<Text>().text = coins.ToString();
         if (coins == 100)
         {
             coins = 0;
@@ -180,13 +234,14 @@ public class GameManager : MonoBehaviour
     public void AddLife()
     {
         lives++;
+        extraLifeSound.Play();
         Debug.Log("Life: " + lives.ToString());
     }
 
     public void AddScore(int points)
     {
         score += points;
-        GameObject.Find("Score").GetComponent<Text>().text = score.ToString();
+        //GameObject.Find("Score").GetComponent<Text>().text = score.ToString();
         if (score > highscore)
         {
             highscore = score;
@@ -194,5 +249,11 @@ public class GameManager : MonoBehaviour
             Debug.Log("Highscore: " + highscore.ToString());
         }
         Debug.Log("Score: " + score.ToString());
+    }
+
+    public void AddTime()
+    {
+        timer += 50.0f;
+        clockSound.Play();
     }
 }

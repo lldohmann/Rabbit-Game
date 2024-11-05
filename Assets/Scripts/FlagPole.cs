@@ -32,7 +32,16 @@ public class FlagPole : MonoBehaviour
 
         yield return new WaitForSeconds(2f);
 
-        GameManager.Instance.LoadLevel(nextWorld, nextStage);
+        //if (nextWorld == 1 && nextStage == 1) //                                             A hacky solution
+        //{
+        //    nextStage = 2;                    //                                         To level loading sequences
+        //}
+        //else if (nextWorld == 1 && nextStage == 2)
+        //{
+        //    nextStage = 1;
+        //}                                                  //                                End Hack
+        //GameManager.Instance.LoadLevel(nextWorld, nextStage);
+        GameManager.Instance.NextLevel();
     }
 
     private IEnumerator MoveTo(Transform subject, Vector3 position)

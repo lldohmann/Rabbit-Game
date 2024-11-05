@@ -4,6 +4,9 @@ using UnityEngine;
 public class BlockHit : MonoBehaviour
 {
     public GameObject item;
+    public AudioSource blockHit;
+    public AudioSource blockBreak;
+    //public AudioSource itemSound;
     public Sprite emptyBlock;
     public int maxHits = -1;
     private bool animating;
@@ -22,15 +25,26 @@ public class BlockHit : MonoBehaviour
     {
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
         spriteRenderer.enabled = true; // show if hidden
+        blockHit.Play();
 
         maxHits--;
 
         if (maxHits == 0) {
+            if (GetComponent<AnimatedSprite>())
+            {
+                GetComponent<AnimatedSprite>().StopAllCoroutines();
+            }
             spriteRenderer.sprite = emptyBlock;
         }
 
         if (item != null) {
             Instantiate(item, transform.position, Quaternion.identity);
+            //itemSound.Play();
+        }
+        else if (GameObject.FindGameObjectWithTag("Player").GetComponent< Player >().big == true)
+        {
+            blockBreak.Play();
+            Destroy(gameObject, 0.25f);
         }
 
         StartCoroutine(Animate());

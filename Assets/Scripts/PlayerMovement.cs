@@ -10,9 +10,20 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 velocity;
     private float inputAxis;
 
-    public float moveSpeed = 8f;
+    [Header("Player Movement Variables")]
+    [SerializeField]
+    [Tooltip("6.3 for underwater effect.")]
+    public float moveSpeed = 8f; 
+    [SerializeField]
+    [Tooltip("3.3 for underwater effect.")]
     public float maxJumpHeight = 5f;
+    [SerializeField]
+    [Tooltip("1.6 for underwater effect.")]
     public float maxJumpTime = 1f;
+    [SerializeField]
+    [Tooltip("True for underwater effect.")]
+    public bool swimming = false;
+
     public float jumpForce => (2f * maxJumpHeight) / (maxJumpTime / 2f);
     public float gravity => (-2f * maxJumpHeight) / Mathf.Pow(maxJumpTime / 2f, 2f);
 
@@ -21,6 +32,10 @@ public class PlayerMovement : MonoBehaviour
     public bool running => Mathf.Abs(velocity.x) > 0.25f || Mathf.Abs(inputAxis) > 0.25f;
     public bool sliding => (inputAxis > 0f && velocity.x < 0f) || (inputAxis < 0f && velocity.x > 0f);
     public bool falling => velocity.y < 0f && !grounded;
+
+
+    public AnimationCurve xpos = new AnimationCurve();
+    public AnimationCurve ypos = new AnimationCurve();
 
     private void Awake()
     {
@@ -79,7 +94,7 @@ public class PlayerMovement : MonoBehaviour
         // accelerate / decelerate
         inputAxis = Input.GetAxis("Horizontal");
         velocity.x = Mathf.MoveTowards(velocity.x, inputAxis * moveSpeed, moveSpeed * Time.deltaTime);
-
+        xpos.AddKey(Time.realtimeSinceStartup, velocity.x);
         // check if running into a wall
         if (rigidbody.Raycast(Vector2.right * velocity.x)) {
             velocity.x = 0f;
@@ -114,12 +129,22 @@ public class PlayerMovement : MonoBehaviour
         if (falling)
         {
             jumping = false;
+            // perform jump
+            if (swimming)
+            {
+                if (Input.GetButtonDown("Jump") && transform.position.y < 12)
+                {
+                    velocity.y = jumpForce;
+                    jumping = true;
+                }
+            }
         }
         float multiplier = falling ? 2f : 1f;
 
         // apply gravity and terminal velocity
         velocity.y += gravity * multiplier * Time.deltaTime;
         velocity.y = Mathf.Max(velocity.y, gravity / 2f);
+        ypos.AddKey(Time.realtimeSinceStartup, velocity.y);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

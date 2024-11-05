@@ -13,8 +13,32 @@ EditorBuildSettings:
     guid: 29a2721f1016cce48b46fb62b4f50613
   - enabled: 1
     path: Assets/Scenes/1-1.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
+    guid: 639b1c39e317a1546a5eb4615185a4ea
+  - enabled: 1
+    path: Assets/Scenes/1-2.unity
+    guid: 110e33079d0c4ba458a800e15853252d
+  - enabled: 1
+    path: Assets/Scenes/1-3.unity
+    guid: 2e89e0b21a2ba114eb11739ebeae6632
+  - enabled: 1
+    path: Assets/Scenes/1-4.unity
+    guid: b171da38640a72c4598e95cdff5b8bd3
+  - enabled: 1
+    path: Assets/Scenes/1-5.unity
+    guid: e11a285dc5c9ca44680c912fd60bd533
+  - enabled: 1
+    path: Assets/Scenes/1-6.unity
+    guid: 79ec901dddbd3344dbe187a19ab8ef12
+  - enabled: 1
+    path: Assets/Scenes/1-7.unity
+    guid: eeb15d69b6decd4499e46f1f32b10e86
   - enabled: 1
     path: Assets/Scenes/Game Over.unity
     guid: 5094215f02413af4aaf54b09a7a7b34d
+  - enabled: 0
+    path: Assets/Scenes/Mario.unity
+    guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 0
+    path: Assets/Scenes/1-1 (old).unity
+    guid: a533bf239e5c2944fbf727448cf44193
   m_configObjects: {}
